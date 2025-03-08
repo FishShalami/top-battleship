@@ -1,8 +1,10 @@
-function Ship() {
+function Ship(length = 1) {
   return {
-    length: 2,
+    length: length,
     hitCount: 0,
     sunk: false,
+    hit() {},
+    isSunk() {},
   };
 }
 

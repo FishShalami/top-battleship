@@ -17,7 +17,7 @@ describe("Ship module returns an object with length, hits, and sunk status", () 
   it("should have the right properties", () => {
     expect(shipObj).toHaveProperty("length");
     expect(shipObj).toHaveProperty("hitCount");
-    expect(shipObj).toHaveProperty("sunk");
+    // expect(shipObj).toHaveProperty("sunk");
     expect(typeof shipObj.hit).toEqual("function");
     expect(typeof shipObj.isSunk).toEqual("function");
   });
@@ -31,12 +31,21 @@ describe("Ship module returns an object with length, hits, and sunk status", () 
   });
 
   it("should return sunk as false initially", () => {
-    expect(Ship(3).sunk).toEqual(false);
+    expect(Ship(3).isSunk()).toEqual(false);
   });
 });
 
 describe("Ship module behavior", () => {
-  const ship = Ship(3);
+  let ship;
+
+  beforeEach(() => {
+    ship = Ship(3);
+  });
+
+  it("should track the number of hits", () => {
+    ship.hit();
+    expect(ship.hitCount).toEqual(1);
+  });
 
   it("should not be sunk if hit fewer times than length", () => {
     ship.hit();

@@ -64,6 +64,17 @@ describe("Gameboard behavior", () => {
       board.placeShip(ship, [0, 0], "vertical");
       expect(() => board.placeShip(ship, [0, 0], "vertical")).toThrow();
     });
+
+    it("should not allow overlapping ships", () => {
+      board.placeShip(ship, [2, 2], "horizontal");
+      expect(() => board.placeShip(ship, [2, 1], "vertical")).toThrow();
+    });
+
+    it("should not allow overlapping ships", () => {
+      board.placeShip(ship, [2, 2], "horizontal");
+      board.placeShip(ship, [1, 1], "horizontal");
+      expect(() => board.placeShip(ship, [2, 1], "vertical")).toThrow();
+    });
   });
 
   describe("Ships going off board", () => {
@@ -90,15 +101,3 @@ describe("Gameboard behavior", () => {
     });
   });
 });
-
-//test for gameboard creation function
-
-//test for gameboard dimensions
-
-//test for overlapping ships
-
-//test for ships going off board in vertical and horizontal direction
-
-//test for origin coordinates to be within range
-
-//test for clear board at initialization

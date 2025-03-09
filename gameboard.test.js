@@ -13,15 +13,92 @@ describe("Gameboard initialization", () => {
 
   it("should return an object", () => {
     expect(typeof gameObj).toBe("object");
+    expect(gameObj.boardDimensions).toEqual({ rows: 10, cols: 10 });
   });
 
   it("should have the right properties", () => {
-    expect(typeof gameObj.placeShip).toEqual("function");
-    expect(typeof gameObj.getPlacedShips).toEqual("function");
-    expect(typeof gameObj.getMissedAttacks).toEqual("function");
-    expect(typeof gameObj.receiveAttack).toEqual("function");
-    expect(typeof gameObj.allShipsSunk).toEqual("function");
+    expect(typeof gameObj.placeShip).toBe("function");
+    expect(typeof gameObj.getPlacedShips).toBe("function");
+    expect(typeof gameObj.getMissedAttacks).toBe("function");
+    expect(typeof gameObj.receiveAttack).toBe("function");
+    expect(typeof gameObj.allShipsSunk).toBe("function");
+  });
+
+  describe("Gameboard should be empty of ships and attacks at start", () => {
+    it("gameboard should have no ships", () => {
+      expect(gameObj.getPlacedShips()).toEqual([]);
+      expect(gameObj.getMissedAttacks()).toEqual([]);
+    });
   });
 });
 
-describe("Gameboard behavior", () => {});
+describe("Gameboard behavior", () => {
+  let board;
+  let ship;
+
+  beforeEach(() => {
+    board = Gameboard({ rows: 10, cols: 10 });
+    ship = Ship(3);
+  });
+
+  describe("Placing ships on board", () => {
+    it("placeShip should provide coordinates of horizontal ship", () => {
+      board.placeShip(ship, [0, 0], "horizontal");
+      expect(board.getPlacedShips()[0].coordArray).toEqual([
+        [0, 0],
+        [1, 0],
+        [2, 0],
+      ]);
+    });
+
+    it("placeShip should provide coordinates of vertical ship", () => {
+      board.placeShip(ship, [0, 0], "vertical");
+      expect(board.getPlacedShips()[0].coordArray).toEqual([
+        [0, 0],
+        [0, 1],
+        [0, 2],
+      ]);
+    });
+
+    it("should not allow overlapping ships", () => {
+      board.placeShip(ship, [0, 0], "vertical");
+      expect(() => board.placeShip(ship, [0, 0], "vertical")).toThrow();
+    });
+  });
+
+  describe("Ships going off board", () => {
+    it("should prevent horizontal ships from extending off the board", () => {
+      expect(() => board.placeShip(ship, [9, 0], "horizontal")).toThrow();
+    });
+
+    it("should prevent vertical ships from extending off the board", () => {
+      expect(() => board.placeShip(ship, [0, 9], "vertical")).toThrow();
+    });
+  });
+
+  describe("Origin coordinates in bounds", () => {
+    it("should prevent origin coordinates out of range", () => {
+      expect(() => board.placeShip(ship, [12, 0], "horizontal")).toThrow();
+    });
+
+    it("should prevent vertical ships from extending off the board", () => {
+      expect(() => board.placeShip(ship, [0, 12], "vertical")).toThrow();
+    });
+
+    it("should prevent negaitve origin coordinates", () => {
+      expect(() => board.placeShip(ship, [-1, 0], "vertical")).toThrow();
+    });
+  });
+});
+
+//test for gameboard creation function
+
+//test for gameboard dimensions
+
+//test for overlapping ships
+
+//test for ships going off board in vertical and horizontal direction
+
+//test for origin coordinates to be within range
+
+//test for clear board at initialization

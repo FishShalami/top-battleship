@@ -32,7 +32,9 @@ describe("Gameboard initialization", () => {
   });
 });
 
-describe("Gameboard behavior", () => {
+//ship placement
+
+describe("Gameboard behavior for ship placement", () => {
   let board;
   let ship;
 
@@ -98,6 +100,63 @@ describe("Gameboard behavior", () => {
 
     it("should prevent negaitve origin coordinates", () => {
       expect(() => board.placeShip(ship, [-1, 0], "vertical")).toThrow();
+    });
+  });
+});
+
+//receive attacks from opponent
+describe("Gameboard behavior for receive attacks", () => {
+  let board;
+  let ship;
+
+  beforeEach(() => {
+    board = Gameboard({ rows: 10, cols: 10 });
+    ship = Ship(3);
+    board.placeShip(ship, [0, 0], "horizontal");
+  });
+
+  //provided coordinates are within the bounds of the board
+  it("should have attack coordinates within bounds", () => {
+    expect(() => board.receiveAttack([12, 0])).toThrow();
+  });
+
+  //if an attack is a miss the getMissedAttacks is updated
+  it("should update the getMissedAttacks for a single miss", () => {
+    board.receiveAttack([5, 5]);
+    expect(board.getMissedAttacks()).toContainEqual([5, 5]);
+  });
+
+  //the getMissedAttacks stores multiple misses updated
+  it("should record multiple missed attacks", () => {
+    board.receiveAttack([5, 5]);
+    board.receiveAttack([4, 4]);
+    expect(board.getMissedAttacks()).toEqual(
+      expect.arrayContaining([
+        [5, 5],
+        [4, 4],
+      ])
+    );
+  });
+
+  //hits are not stored in the getMissedAttacks
+  it("should not record a hit as a miss", () => {
+    board.receiveAttack([1, 0]);
+    expect(board.getMissedAttacks()).toEqual([]);
+  });
+
+  //prevent duplicate attack
+  it("should prevent duplicate attacks", () => {
+    board.receiveAttack([5, 5]);
+    expect(() => board.receiveAttack([5, 5])).toThrow();
+  });
+
+  //hits are stored in the ship object
+  describe("When an attack is on a ship coordinate", () => {
+    it("should call the ship's hit() method", () => {
+      // Use jest.spyOn to monitor ship.hit
+      const hitSpy = jest.spyOn(ship, "hit");
+      board.receiveAttack([0, 0]);
+      expect(hitSpy).toHaveBeenCalled();
     });
   });
 });

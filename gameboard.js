@@ -108,7 +108,14 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
 
       this.missedAttacks.push(attackCoord);
     },
-    allShipsSunk() {},
+    allShipsSunk() {
+      for (const placedShip of this.placedShips) {
+        if (!placedShip.ship.isSunk()) {
+          return false;
+        }
+      }
+      return true;
+    },
   };
 }
 

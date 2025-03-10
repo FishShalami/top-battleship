@@ -160,3 +160,21 @@ describe("Gameboard behavior for receive attacks", () => {
     });
   });
 });
+
+describe("Assessing if all ships are sunk", () => {
+  let board;
+  let ship;
+
+  beforeEach(() => {
+    board = Gameboard({ rows: 10, cols: 10 });
+    ship = Ship(3);
+    board.placeShip(ship, [0, 0], "horizontal");
+  });
+
+  it("allShipsSunk should report true if all ships are sunk", () => {
+    board.receiveAttack([0, 0]);
+    board.receiveAttack([1, 0]);
+    board.receiveAttack([2, 0]);
+    expect(board.allShipsSunk()).toEqual(true);
+  });
+});

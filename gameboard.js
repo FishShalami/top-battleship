@@ -16,8 +16,8 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
 
       //origin coordinates must be within range
       if (
-        originCoordX > this.boardDimensions.cols ||
-        originCoordY > this.boardDimensions.rows ||
+        originCoordX >= this.boardDimensions.cols ||
+        originCoordY >= this.boardDimensions.rows ||
         originCoordX < 0 ||
         originCoordY < 0
       ) {
@@ -75,9 +75,39 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
       return this.placedShips;
     },
     getMissedAttacks() {
-      return [];
+      return this.missedAttacks;
     },
-    receiveAttack() {},
+    receiveAttack(attackCoord) {
+      let attackCoordX = attackCoord[0];
+      let attackCoordY = attackCoord[1];
+
+      //origin coordinates must be within range
+      if (
+        attackCoordX >= this.boardDimensions.cols ||
+        attackCoordY >= this.boardDimensions.rows ||
+        attackCoordX < 0 ||
+        attackCoordY < 0
+      ) {
+        throw new Error("Origin Coordinates out of bounds");
+      }
+
+      //for attacks that are a direct hit
+      for (const placedShip of this.placedShips) {
+        for (const coord of placedShip.coordArray) {
+          if (coord[0] === attackCoordX && coord[1] === attackCoordY) {
+            placedShip.ship.hit();
+            return;
+          }
+        }
+      }
+      for (const missCoord of this.missedAttacks) {
+        if (missCoord[0] === attackCoordX && missCoord[1] === attackCoordY) {
+          throw new Error("This coordinate was already attacked");
+        }
+      }
+
+      this.missedAttacks.push(attackCoord);
+    },
     allShipsSunk() {},
   };
 }

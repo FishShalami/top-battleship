@@ -12,9 +12,13 @@ describe("PLayer factory", () => {
     expect(player.type).toBe("real");
   });
 
+  it("type should only be real or computer", () => {
+    expect(() => Player("bananna")).toThrow();
+  });
+
   it("should have its own gameboard", () => {
-    const Player = Player("computer");
-    expect(player.gameboard).toBeDefined();
-    expect(typeof player.gameboard.placeShip).toBe("function");
+    const playerC = Player("computer");
+    expect(playerC.gameboard).toBeDefined();
+    expect(typeof playerC.gameboard.placeShip).toBe("function");
   });
 });

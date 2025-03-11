@@ -1,5 +1,5 @@
-import { Gameboard } from "./gameboard";
-import { Player } from "./player";
+import { Gameboard } from "./src/gameboard";
+import { Player } from "./src/player";
 
 describe("PLayer factory", () => {
   it("should create a player object", () => {

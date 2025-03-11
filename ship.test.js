@@ -1,4 +1,4 @@
-import { Ship } from "./ship.js";
+import { Ship } from "./src/ship.js";
 
 describe("Ship module exists?", () => {
   it("should import Ship successfully", () => {

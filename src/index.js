@@ -8,16 +8,22 @@ import { Ship } from "./ship";
 
 const player1 = Player("real", "David");
 const player2 = Player("computer", "Computer");
+const ship1 = Ship(2);
+const ship2 = Ship(3);
+const ship3 = Ship(4);
+const ship4 = Ship(2);
+const ship5 = Ship(3);
+const ship6 = Ship(4);
 
-player1.gameboard.placeShip(2, [0, 0]);
-player1.gameboard.placeShip(3, [0, 3]);
-player1.gameboard.placeShip(4, [0, 5], "vertical");
+player1.gameboard.placeShip(ship1, [0, 0]);
+player1.gameboard.placeShip(ship2, [0, 3]);
+player1.gameboard.placeShip(ship3, [0, 5], "vertical");
 console.log(player1.name);
 console.log(player1.gameboard.getPlacedShips());
 
-player2.gameboard.placeShip(2, [0, 0]);
-player2.gameboard.placeShip(3, [0, 4]);
-player2.gameboard.placeShip(4, [0, 5], "vertical");
+player2.gameboard.placeShip(ship4, [0, 0]);
+player2.gameboard.placeShip(ship5, [0, 4]);
+player2.gameboard.placeShip(ship6, [0, 5], "vertical");
 console.log(player2.name);
 console.log(player2.gameboard.getPlacedShips());
 

@@ -44,17 +44,34 @@ const b1Row = player1.gameboard.boardDimensions.rows;
 const b2Selector = document.querySelector(".board2");
 const b2Row = player2.gameboard.boardDimensions.rows;
 
-function makeRows(container, rows) {
+function makeRows(container, rows, cols) {
+  // Set CSS variables for the grid layout
   container.style.setProperty("--grid-rows", rows);
-  container.style.setProperty("--grid-cols", rows);
-  for (let c = 0; c < rows ** 2; c++) {
-    let cell = document.createElement("div");
-    cell.innerText = c + 1;
-    container.appendChild(cell).className = "grid-item";
+  container.style.setProperty("--grid-cols", cols);
+
+  // Create the 2D array to store the cells
+  const grid = [];
+
+  // Loop through each row
+  for (let r = 0; r < rows; r++) {
+    const rowArray = [];
+    // Loop through each column in the current row
+    for (let c = 0; c < cols; c++) {
+      let cell = document.createElement("div");
+      // Calculate a cell number if needed (row-major order)
+      cell.innerText = r * rows + c + 1;
+      cell.className = "grid-item";
+      container.appendChild(cell);
+      // Store the cell in the row array
+      rowArray.push(cell);
+    }
+    // Add the completed row to the grid array
+    grid.push(rowArray);
   }
+  return grid;
 }
 
-makeRows(b1Selector, b1Row);
-makeRows(b2Selector, b2Row);
+makeRows(b1Selector, b1Row, b1Row);
+makeRows(b2Selector, b2Row, b2Row);
 
 console.log(player1.gameboard.getPlacedShips()[0].coordArray);

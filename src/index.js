@@ -95,3 +95,20 @@ function displayShips(player, board) {
 }
 displayShips(player1, board1);
 displayShips(player2, board2);
+
+//render board
+//place ships on board
+//player one turn
+//listen for click on board2 - attack
+//update misses or hits
+//re-render board/ships
+//all ships sunk?
+//end game
+//pass turn
+//computer turn
+//listen for click on board1
+//update misses or hits
+//re-render board/ships
+//all ships sunk?
+//end game
+//pass turn

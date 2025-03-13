@@ -44,22 +44,22 @@ const b1Row = player1.gameboard.boardDimensions.rows;
 const b2Selector = document.querySelector(".board2");
 const b2Row = player2.gameboard.boardDimensions.rows;
 
-function makeRows(container, rows, cols) {
+function makeGrid(container, rows, cols) {
   // Set CSS variables for the grid layout
   container.style.setProperty("--grid-rows", rows);
   container.style.setProperty("--grid-cols", cols);
 
-  // Create the 2D array to store the cells
+  // Create the 2D array to store the cells, with grid[y][x]
   const grid = [];
 
-  // Loop through each row
-  for (let r = 0; r < rows; r++) {
+  // Loop through each row (y-axis)
+  for (let y = 0; y < rows; y++) {
     const rowArray = [];
-    // Loop through each column in the current row
-    for (let c = 0; c < cols; c++) {
+    // Loop through each column in the current row (x-axis)
+    for (let x = 0; x < cols; x++) {
       let cell = document.createElement("div");
-      // Calculate a cell number if needed (row-major order)
-      cell.innerText = r * rows + c + 1;
+      // Label the cell with its [x,y] coordinate for clarity
+      cell.innerText = `${x},${y}`;
       cell.className = "grid-item";
       container.appendChild(cell);
       // Store the cell in the row array
@@ -71,7 +71,27 @@ function makeRows(container, rows, cols) {
   return grid;
 }
 
-makeRows(b1Selector, b1Row, b1Row);
-makeRows(b2Selector, b2Row, b2Row);
+const board1 = makeGrid(b1Selector, b1Row, b1Row);
+const board2 = makeGrid(b2Selector, b2Row, b2Row);
 
 console.log(player1.gameboard.getPlacedShips()[0].coordArray);
+
+function updateShipCells(grid, coordinate, className) {
+  // Destructure coordinate as [x, y] (x: column, y: row)
+  const [x, y] = coordinate;
+
+  // Access the cell at grid[y][x] and add the CSS class
+  if (grid[y] && grid[y][x]) {
+    grid[y][x].classList.add(className);
+  }
+}
+
+function displayShips(player, board) {
+  player.gameboard.getPlacedShips().forEach((ship) => {
+    ship.coordArray.forEach((coordinate) => {
+      updateShipCells(board, coordinate, "ship-present");
+    });
+  });
+}
+displayShips(player1, board1);
+displayShips(player2, board2);

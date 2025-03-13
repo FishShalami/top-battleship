@@ -56,3 +56,5 @@ function makeRows(container, rows) {
 
 makeRows(b1Selector, b1Row);
 makeRows(b2Selector, b2Row);
+
+console.log(player1.gameboard.getPlacedShips()[0].coordArray);

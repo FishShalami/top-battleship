@@ -98,11 +98,7 @@ function displayShips(player, board) {
 displayShips(player1, board1);
 displayShips(player2, board2);
 
-//render board
-//place ships on board
-//start game
-//player one turn
-//listen for click on board2 - attack
+//need a function that places all ships, marks all misses, marks all hits  each turn
 
 function waitForClick(boardSelector) {
   return new Promise((resolve) => {

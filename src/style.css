@@ -39,5 +39,11 @@ h1 {
 }
 
 .grid-item.ship-present {
-  background-color: blue; /* Change to any color you prefer */
+  background-color: blue;
+}
+
+.grid-item.attacked {
+  border: 2px red solid;
+  color: red;
+  font-weight: 800;
 }

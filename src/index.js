@@ -60,7 +60,9 @@ function makeGrid(container, rows, cols) {
       let cell = document.createElement("div");
       // Label the cell with its [x,y] coordinate for clarity
       cell.innerText = `${x},${y}`;
-      cell.className = "grid-item";
+      (cell.dataset.x = x),
+        (cell.dataset.y = y),
+        (cell.className = "grid-item");
       container.appendChild(cell);
       // Store the cell in the row array
       rowArray.push(cell);
@@ -74,7 +76,7 @@ function makeGrid(container, rows, cols) {
 const board1 = makeGrid(b1Selector, b1Row, b1Row);
 const board2 = makeGrid(b2Selector, b2Row, b2Row);
 
-console.log(player1.gameboard.getPlacedShips()[0].coordArray);
+console.log(player1.gameboard.getPlacedShips()[0]);
 
 function updateShipCells(grid, coordinate, className) {
   // Destructure coordinate as [x, y] (x: column, y: row)
@@ -98,8 +100,59 @@ displayShips(player2, board2);
 
 //render board
 //place ships on board
+//start game
 //player one turn
 //listen for click on board2 - attack
+
+function waitForClick(boardSelector) {
+  return new Promise((resolve) => {
+    const board = document.querySelector(boardSelector);
+
+    function clickHandler(e) {
+      if (e.target.matches(".grid-item")) {
+        const x = parseInt(e.target.dataset.x, 10);
+        const y = parseInt(e.target.dataset.y, 10);
+        // Remove the event listener after a valid click to prevent multiple triggers.
+        board.removeEventListener("click", clickHandler);
+        console.log("Clicked cell coordinates:", x, y);
+        resolve([x, y]);
+      }
+    }
+    board.addEventListener("click", clickHandler);
+  });
+}
+
+function markCellWithX(coordinate, boardSelector) {
+  const [x, y] = coordinate;
+  const board = document.querySelector(boardSelector);
+  const cell = board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+  if (cell) {
+    cell.innerText = "X";
+  }
+}
+
+async function attack(receivingPlayer) {
+  let boardClass = ".board2";
+  if (receivingPlayer === "player1") boardClass = ".board1";
+
+  console.log("Waiting for user click...");
+  const attackCoord = await waitForClick(boardClass);
+  console.log("User clicked at:", attackCoord);
+  return attackCoord;
+}
+
+async function gameTurn() {
+  let attackCoord = await attack(player2);
+  player2.gameboard.receiveAttack(attackCoord);
+  markCellWithX(attackCoord, ".board2"); //need to fix parameter to be relative
+  updateShipCells(board2, attackCoord, "attacked");
+  console.log("missed attacks", player2.gameboard.getMissedAttacks());
+  console.log(player2.gameboard.getPlacedShips()[0]);
+  if (player2.gameboard.allShipsSunk()) console.log("Game over");
+}
+
+gameTurn();
+
 //update misses or hits
 //re-render board/ships
 //all ships sunk?

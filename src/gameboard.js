@@ -95,34 +95,34 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
         throw new Error("Origin Coordinates out of bounds");
       }
 
-      //for attacks that are a direct hit
+      // Check if this coordinate was already attacked (either a hit or a miss)
+      const alreadyAttacked =
+        this.directHits.some(
+          (coord) => coord[0] === attackCoordX && coord[1] === attackCoordY
+        ) ||
+        this.missedAttacks.some(
+          (coord) => coord[0] === attackCoordX && coord[1] === attackCoordY
+        );
+
+      if (alreadyAttacked) {
+        alert("This coordinate was already attacked!");
+        return false;
+      }
+
+      // Process potential hit on any ship
       for (const placedShip of this.placedShips) {
         for (const coord of placedShip.coordArray) {
-          for (const attackCoord of this.directHits) {
-            if (
-              attackCoord[0] === attackCoordX &&
-              attackCoord[1] === attackCoordY
-            ) {
-              alert("This coordinate was already attacked!");
-              return false;
-            }
-          }
-
           if (coord[0] === attackCoordX && coord[1] === attackCoordY) {
             placedShip.ship.hit();
             this.directHits.push(attackCoord);
-            return;
+            return true;
           }
         }
       }
-      for (const missCoord of this.missedAttacks) {
-        if (missCoord[0] === attackCoordX && missCoord[1] === attackCoordY) {
-          alert("This coordinate was already attacked!");
-          return false;
-        }
-      }
 
+      // If no ship was hit, record it as a miss
       this.missedAttacks.push(attackCoord);
+      return true;
     },
     allShipsSunk() {
       for (const placedShip of this.placedShips) {

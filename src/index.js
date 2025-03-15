@@ -161,6 +161,38 @@ function initializeBoard() {
   displayShips(player2, board2);
 }
 
+function computerCoordPick() {
+  const missedAttacks = player1.gameboard.getMissedAttacks();
+  const directHits = player1.gameboard.getDirectHits();
+  const allAttacks = [...missedAttacks, ...directHits];
+
+  const gridSize = 10;
+  const availCoordinates = [];
+
+  for (let x = 0; x < gridSize; x++) {
+    for (let y = 0; y < gridSize; y++) {
+      availCoordinates.push([x, y]);
+    }
+  }
+
+  const availAttacks = availCoordinates.filter(
+    (coord1) =>
+      !allAttacks.some(
+        (coord2) => coord1[0] === coord2[0] && coord1[1] === coord2[1]
+      )
+  );
+
+  function getRandomCoord(arr) {
+    if (arr.length === 0) {
+      return undefined; // Return undefined for empty arrays
+    }
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    return arr[randomIndex];
+  }
+
+  return getRandomCoord(availAttacks);
+}
+
 async function playerTurn(receivingPlayer) {
   let boardSelector = ".board2";
   let board = board2;
@@ -184,7 +216,6 @@ function gameRound() {}
 
 initializeBoard();
 
-playerTurn(player2);
 playerTurn(player2);
 playerTurn(player1);
 

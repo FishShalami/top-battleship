@@ -202,8 +202,20 @@ async function playerTurn(defender, attacker) {
     boardSelector = ".board1";
     board = board1;
   }
-  let attackCoord = await attack(defender);
-  defender.gameboard.receiveAttack(attackCoord);
+
+  let valid = false;
+  let attackCoord;
+
+  while (!valid) {
+    attackCoord = await attack(defender);
+    valid = defender.gameboard.receiveAttack(attackCoord);
+    if (!valid) {
+      alert(
+        "This coordinate was already attacked. Please choose another cell."
+      );
+    }
+  }
+
   updateBoard(defender, board, boardSelector);
   console.log(
     "Hits on",

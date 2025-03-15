@@ -146,13 +146,25 @@ describe("Gameboard behavior for receive attacks", () => {
 
   //prevent duplicate attack that is a miss
   it("should prevent duplicate attacks on a miss", () => {
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
     board.receiveAttack([5, 5]);
-    expect(() => board.receiveAttack([5, 5])).toThrow();
+    const result = board.receiveAttack([5, 5]);
+    expect(result).toBe(false);
+    expect(alertSpy).toHaveBeenCalledWith(
+      "This coordinate was already attacked!"
+    );
+    alertSpy.mockRestore();
   });
 
   it("should prevent duplicate attacks on a direct hit", () => {
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
     board.receiveAttack([0, 0]);
-    expect(() => board.receiveAttack([0, 0])).toThrow();
+
+    const result = board.receiveAttack([0, 0]);
+    expect(result).toBe(false);
+    expect(alertSpy).toHaveBeenCalledWith(
+      "This coordinate was already attacked!"
+    );
   });
 
   //hits are stored in the ship object

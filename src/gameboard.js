@@ -103,7 +103,8 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
               attackCoord[0] === attackCoordX &&
               attackCoord[1] === attackCoordY
             ) {
-              throw new Error("This coordinate was already attacked");
+              alert("This coordinate was already attacked!");
+              return false;
             }
           }
 
@@ -116,7 +117,8 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
       }
       for (const missCoord of this.missedAttacks) {
         if (missCoord[0] === attackCoordX && missCoord[1] === attackCoordY) {
-          throw new Error("This coordinate was already attacked");
+          alert("This coordinate was already attacked!");
+          return false;
         }
       }
 

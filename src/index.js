@@ -148,11 +148,12 @@ function waitForClick(boardSelector) {
 }
 
 async function attack(defender) {
-  let boardClass = ".board2";
-  if (defender.type === "real") boardClass = ".board1";
+  if (defender.type === "real") {
+    return computerCoordPick();
+  }
 
   console.log("Waiting for user click...");
-  const attackCoord = await waitForClick(boardClass);
+  const attackCoord = await waitForClick(".board2");
   console.log("User clicked at:", attackCoord);
   return attackCoord;
 }
@@ -210,7 +211,6 @@ async function playerTurn(defender, attacker) {
     ": ",
     defender.gameboard.getDirectHits()
   );
-  if (defender.gameboard.allShipsSunk()) alert("Game over");
 }
 
 async function gameLoop(attacker, defender) {
@@ -224,7 +224,8 @@ async function gameLoop(attacker, defender) {
     // Swap roles
     [attacker, defender] = [defender, attacker];
   }
-  console.log(`${attacker.name} wins!`);
+  // console.log(`${attacker.name} wins!`);
+  alert(`${attacker.name} wins!`);
 }
 
 initializeBoard();

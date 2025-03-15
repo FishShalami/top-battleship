@@ -78,27 +78,55 @@ const board2 = makeGrid(b2Selector, b2Row, b2Row);
 
 console.log(player1.gameboard.getPlacedShips()[0]);
 
-function updateShipCells(grid, coordinate, className) {
+function updateCellClass(board, coordinate, className) {
   // Destructure coordinate as [x, y] (x: column, y: row)
   const [x, y] = coordinate;
 
   // Access the cell at grid[y][x] and add the CSS class
-  if (grid[y] && grid[y][x]) {
-    grid[y][x].classList.add(className);
+  if (board[y] && board[y][x]) {
+    board[y][x].classList.add(className);
   }
 }
 
 function displayShips(player, board) {
   player.gameboard.getPlacedShips().forEach((ship) => {
     ship.coordArray.forEach((coordinate) => {
-      updateShipCells(board, coordinate, "ship-present");
+      updateCellClass(board, coordinate, "ship-present");
     });
   });
 }
-displayShips(player1, board1);
-displayShips(player2, board2);
 
-//need a function that places all ships, marks all misses, marks all hits  each turn
+function markCellWithX(coordinate, boardSelector) {
+  const [x, y] = coordinate;
+  const boardElement = document.querySelector(boardSelector);
+  const cell = boardElement.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+  if (cell) {
+    cell.innerText = "X";
+  }
+}
+
+function displayMisses(player, board, boardSelector) {
+  const misses = player.gameboard.getMissedAttacks();
+  misses.forEach((miss) => {
+    markCellWithX(miss, boardSelector);
+    updateCellClass(board, miss, "attacked");
+  });
+}
+
+function displayHits(player, board, boardSelector) {
+  const hits = player.gameboard.getDirectHits();
+
+  hits.forEach((hit) => {
+    markCellWithX(hit, boardSelector);
+    updateCellClass(board, hit, "attacked");
+  });
+}
+
+function updateBoard(receivingPlayer, board, boardSelector) {
+  displayShips(receivingPlayer, board);
+  displayMisses(receivingPlayer, board, boardSelector);
+  displayHits(receivingPlayer, board, boardSelector);
+}
 
 function waitForClick(boardSelector) {
   return new Promise((resolve) => {
@@ -118,18 +146,9 @@ function waitForClick(boardSelector) {
   });
 }
 
-function markCellWithX(coordinate, boardSelector) {
-  const [x, y] = coordinate;
-  const board = document.querySelector(boardSelector);
-  const cell = board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-  if (cell) {
-    cell.innerText = "X";
-  }
-}
-
 async function attack(receivingPlayer) {
   let boardClass = ".board2";
-  if (receivingPlayer === "player1") boardClass = ".board1";
+  if (receivingPlayer.type === "real") boardClass = ".board1";
 
   console.log("Waiting for user click...");
   const attackCoord = await waitForClick(boardClass);
@@ -137,15 +156,20 @@ async function attack(receivingPlayer) {
   return attackCoord;
 }
 
+function initializeBoard() {
+  displayShips(player1, board1);
+  displayShips(player2, board2);
+}
+
 async function gameTurn() {
   let attackCoord = await attack(player2);
   player2.gameboard.receiveAttack(attackCoord);
-  markCellWithX(attackCoord, ".board2"); //need to fix parameter to be relative
-  updateShipCells(board2, attackCoord, "attacked");
-  console.log("missed attacks", player2.gameboard.getMissedAttacks());
-  console.log(player2.gameboard.getPlacedShips()[0]);
+  updateBoard(player2, board2, ".board2");
+  console.log("Hits on Player 2: ", player2.gameboard.getDirectHits());
   if (player2.gameboard.allShipsSunk()) console.log("Game over");
 }
+
+initializeBoard();
 
 gameTurn();
 

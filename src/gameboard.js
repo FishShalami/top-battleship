@@ -6,6 +6,7 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
     boardDimensions: dimensions,
     placedShips: [],
     missedAttacks: [],
+    directHits: [],
 
     //Methods
     placeShip(ship, originCoord, horizOrVert = "horizontal") {
@@ -74,6 +75,9 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
     getPlacedShips() {
       return this.placedShips;
     },
+    getDirectHits() {
+      return this.directHits;
+    },
     getMissedAttacks() {
       return this.missedAttacks;
     },
@@ -96,6 +100,7 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
         for (const coord of placedShip.coordArray) {
           if (coord[0] === attackCoordX && coord[1] === attackCoordY) {
             placedShip.ship.hit();
+            this.directHits.push(attackCoord);
             return;
           }
         }

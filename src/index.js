@@ -6,21 +6,53 @@ import { Ship } from "./ship";
 
 // startGame();
 
-const player1 = Player("real", "David");
-const player2 = Player("computer", "Computer");
+function makePlayers() {
+  const playerName = prompt("What is your name?");
+  const player1 = Player("real", playerName);
+  const player2 = Player("computer", "Computer");
+  return { player1, player2 };
+}
+const { player1, player2 } = makePlayers();
 let attacker = player1.type;
-const ship1 = Ship(2);
-const ship2 = Ship(3);
-const ship3 = Ship(4);
+
+//place five ships 2, 3, 3, 4, 5 in length
+
+//create object with five ships for player1 and player2
+//for each ship, ask user to click on the cell where the ship should be
+//hold shift to change the orientation from horizontal to vertical
+//use css to highlight the squares that the ship will exist in
+//
+
+// function waitForVesselPlace() {
+//   return new Promise((resolve) => {
+//     const board = document.querySelector(".board1");
+
+//     function clickHandler(e) {
+//       if (e.target.matches(".grid-item")) {
+//         const x = parseInt(e.target.dataset.x, 10);
+//         const y = parseInt(e.target.dataset.y, 10);
+//         // Remove the event listener after a valid click to prevent multiple triggers.
+//         board.removeEventListener("click", clickHandler);
+//         console.log("Clicked cell coordinates:", x, y);
+//         resolve([x, y]);
+//       }
+//     }
+//     board.addEventListener("click", clickHandler);
+//   });
+// }
+
+// const ship1 = Ship(2);
+// const ship2 = Ship(3);
+// const ship3 = Ship(4);
 const ship4 = Ship(2);
 const ship5 = Ship(3);
 const ship6 = Ship(4);
 
-player1.gameboard.placeShip(ship1, [0, 0]);
-player1.gameboard.placeShip(ship2, [0, 3]);
-player1.gameboard.placeShip(ship3, [0, 5], "vertical");
-console.log(player1.name);
-console.log(player1.gameboard.getPlacedShips());
+// player1.gameboard.placeShip(ship1, [0, 0]);
+// player1.gameboard.placeShip(ship2, [0, 3]);
+// player1.gameboard.placeShip(ship3, [0, 5], "vertical");
+// console.log(player1.name);
+// console.log(player1.gameboard.getPlacedShips());
 
 player2.gameboard.placeShip(ship4, [0, 0]);
 player2.gameboard.placeShip(ship5, [0, 4]);
@@ -77,7 +109,29 @@ function makeGrid(container, rows, cols) {
 const board1 = makeGrid(b1Selector, b1Row, b1Row);
 const board2 = makeGrid(b2Selector, b2Row, b2Row);
 
-console.log(player1.gameboard.getPlacedShips()[0]);
+async function dropShip() {
+  console.log("Waiting for user click for ship origin point...");
+  const shipOrigin = await waitForClick(".board1");
+  console.log("User clicked at:", shipOrigin);
+  return shipOrigin;
+}
+
+async function pickShipCoord() {
+  const shipLengths = [2, 3, 3, 4, 5];
+  const shipsArr = shipLengths.map((length) => Ship(length));
+
+  for (const ship of shipsArr) {
+    console.log(
+      "Waiting for user pick of ship origin for ship of length:",
+      ship.length
+    );
+    const newShipCoord = await dropShip();
+    player1.gameboard.placeShip(ship, newShipCoord);
+    console.log(`Ship of length ${ship.length} placed at ${newShipCoord}`);
+  }
+
+  console.log("All ships placed:", player1.gameboard.getPlacedShips());
+}
 
 function updateCellClass(board, coordinate, className) {
   // Destructure coordinate as [x, y] (x: column, y: row)
@@ -235,5 +289,8 @@ async function gameLoop(attacker, defender) {
   alert(`${attacker.name} wins!`);
 }
 
-initializeBoard();
-gameLoop(player1, player2);
+(async function startGameSequence() {
+  await pickShipCoord();
+  initializeBoard();
+  gameLoop(player1, player2);
+})();

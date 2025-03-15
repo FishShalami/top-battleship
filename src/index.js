@@ -110,7 +110,7 @@ function displayMisses(player, board, boardSelector) {
   const misses = player.gameboard.getMissedAttacks();
   misses.forEach((miss) => {
     markCellWithX(miss, boardSelector);
-    updateCellClass(board, miss, "attacked");
+    updateCellClass(board, miss, "missed");
   });
 }
 
@@ -124,7 +124,7 @@ function displayHits(player, board, boardSelector) {
 }
 
 function updateBoard(defender, board, boardSelector) {
-  displayShips(defender, board);
+  // displayShips(defender, board);
   displayMisses(defender, board, boardSelector);
   displayHits(defender, board, boardSelector);
 }
@@ -160,7 +160,7 @@ async function attack(defender) {
 
 function initializeBoard() {
   displayShips(player1, board1);
-  displayShips(player2, board2);
+  // displayShips(player2, board2);
 }
 
 function computerCoordPick() {

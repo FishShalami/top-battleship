@@ -42,8 +42,15 @@ h1 {
   background-color: blue;
 }
 
+.grid-item.missed {
+  border: 2px red solid;
+  color: red;
+  font-weight: 800;
+}
+
 .grid-item.attacked {
   border: 2px red solid;
   color: red;
+  background-color: black;
   font-weight: 800;
 }

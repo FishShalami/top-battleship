@@ -8,6 +8,7 @@ import { Ship } from "./ship";
 
 const player1 = Player("real", "David");
 const player2 = Player("computer", "Computer");
+let attacker = player1.type;
 const ship1 = Ship(2);
 const ship2 = Ship(3);
 const ship3 = Ship(4);
@@ -122,10 +123,10 @@ function displayHits(player, board, boardSelector) {
   });
 }
 
-function updateBoard(receivingPlayer, board, boardSelector) {
-  displayShips(receivingPlayer, board);
-  displayMisses(receivingPlayer, board, boardSelector);
-  displayHits(receivingPlayer, board, boardSelector);
+function updateBoard(defender, board, boardSelector) {
+  displayShips(defender, board);
+  displayMisses(defender, board, boardSelector);
+  displayHits(defender, board, boardSelector);
 }
 
 function waitForClick(boardSelector) {
@@ -146,9 +147,9 @@ function waitForClick(boardSelector) {
   });
 }
 
-async function attack(receivingPlayer) {
+async function attack(defender) {
   let boardClass = ".board2";
-  if (receivingPlayer.type === "real") boardClass = ".board1";
+  if (defender.type === "real") boardClass = ".board1";
 
   console.log("Waiting for user click...");
   const attackCoord = await waitForClick(boardClass);
@@ -193,41 +194,38 @@ function computerCoordPick() {
   return getRandomCoord(availAttacks);
 }
 
-async function playerTurn(receivingPlayer) {
+async function playerTurn(defender, attacker) {
   let boardSelector = ".board2";
   let board = board2;
-  if (receivingPlayer.type === "real") {
+  if (defender.type === "real") {
     boardSelector = ".board1";
     board = board1;
   }
-  let attackCoord = await attack(receivingPlayer);
-  receivingPlayer.gameboard.receiveAttack(attackCoord);
-  updateBoard(receivingPlayer, board, boardSelector);
+  let attackCoord = await attack(defender);
+  defender.gameboard.receiveAttack(attackCoord);
+  updateBoard(defender, board, boardSelector);
   console.log(
     "Hits on",
-    receivingPlayer.name,
+    defender.name,
     ": ",
-    receivingPlayer.gameboard.getDirectHits()
+    defender.gameboard.getDirectHits()
   );
-  if (receivingPlayer.gameboard.allShipsSunk()) console.log("Game over");
+  if (defender.gameboard.allShipsSunk()) alert("Game over");
 }
 
-function gameRound() {}
+async function gameLoop(attacker, defender) {
+  while (
+    !defender.gameboard.allShipsSunk() &&
+    !attacker.gameboard.allShipsSunk()
+  ) {
+    await playerTurn(defender, attacker);
+    // Check if the defender's board is sunk:
+    if (defender.gameboard.allShipsSunk()) break;
+    // Swap roles
+    [attacker, defender] = [defender, attacker];
+  }
+  console.log(`${attacker.name} wins!`);
+}
 
 initializeBoard();
-
-playerTurn(player2);
-playerTurn(player1);
-
-//update misses or hits
-//re-render board/ships
-//all ships sunk?
-//end game
-//pass turn
-//computer turn
-//listen for click on board1
-//update misses or hits
-//re-render board/ships
-//all ships sunk?
-//end game
-//pass turn
+gameLoop(player1, player2);

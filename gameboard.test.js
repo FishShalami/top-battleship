@@ -144,10 +144,15 @@ describe("Gameboard behavior for receive attacks", () => {
     expect(board.getMissedAttacks()).toEqual([]);
   });
 
-  //prevent duplicate attack
-  it("should prevent duplicate attacks", () => {
+  //prevent duplicate attack that is a miss
+  it("should prevent duplicate attacks on a miss", () => {
     board.receiveAttack([5, 5]);
     expect(() => board.receiveAttack([5, 5])).toThrow();
+  });
+
+  it("should prevent duplicate attacks on a direct hit", () => {
+    board.receiveAttack([0, 0]);
+    expect(() => board.receiveAttack([0, 0])).toThrow();
   });
 
   //hits are stored in the ship object

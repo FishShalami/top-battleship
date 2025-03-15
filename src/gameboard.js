@@ -98,6 +98,15 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
       //for attacks that are a direct hit
       for (const placedShip of this.placedShips) {
         for (const coord of placedShip.coordArray) {
+          for (const attackCoord of this.directHits) {
+            if (
+              attackCoord[0] === attackCoordX &&
+              attackCoord[1] === attackCoordY
+            ) {
+              throw new Error("This coordinate was already attacked");
+            }
+          }
+
           if (coord[0] === attackCoordX && coord[1] === attackCoordY) {
             placedShip.ship.hit();
             this.directHits.push(attackCoord);

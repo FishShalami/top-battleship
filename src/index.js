@@ -161,17 +161,32 @@ function initializeBoard() {
   displayShips(player2, board2);
 }
 
-async function gameTurn() {
-  let attackCoord = await attack(player2);
-  player2.gameboard.receiveAttack(attackCoord);
-  updateBoard(player2, board2, ".board2");
-  console.log("Hits on Player 2: ", player2.gameboard.getDirectHits());
-  if (player2.gameboard.allShipsSunk()) console.log("Game over");
+async function playerTurn(receivingPlayer) {
+  let boardSelector = ".board2";
+  let board = board2;
+  if (receivingPlayer.type === "real") {
+    boardSelector = ".board1";
+    board = board1;
+  }
+  let attackCoord = await attack(receivingPlayer);
+  receivingPlayer.gameboard.receiveAttack(attackCoord);
+  updateBoard(receivingPlayer, board, boardSelector);
+  console.log(
+    "Hits on",
+    receivingPlayer.name,
+    ": ",
+    receivingPlayer.gameboard.getDirectHits()
+  );
+  if (receivingPlayer.gameboard.allShipsSunk()) console.log("Game over");
 }
+
+function gameRound() {}
 
 initializeBoard();
 
-gameTurn();
+playerTurn(player2);
+playerTurn(player2);
+playerTurn(player1);
 
 //update misses or hits
 //re-render board/ships

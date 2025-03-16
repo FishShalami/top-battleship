@@ -109,11 +109,30 @@ function makeGrid(container, rows, cols) {
 const board1 = makeGrid(b1Selector, b1Row, b1Row);
 const board2 = makeGrid(b2Selector, b2Row, b2Row);
 
+function waitForShipPlacementClick(boardSelector) {
+  return new Promise((resolve) => {
+    const board = document.querySelector(boardSelector);
+    function clickHandler(e) {
+      if (e.target.matches(".grid-item")) {
+        const x = parseInt(e.target.dataset.x, 10);
+        const y = parseInt(e.target.dataset.y, 10);
+        // Check for Shift key to determine orientation.
+        const orientation = e.shiftKey ? "vertical" : "horizontal";
+        board.removeEventListener("click", clickHandler);
+        resolve({ coordinate: [x, y], orientation });
+      }
+    }
+    board.addEventListener("click", clickHandler);
+  });
+}
+
 async function dropShip() {
   console.log("Waiting for user click for ship origin point...");
-  const shipOrigin = await waitForClick(".board1");
-  console.log("User clicked at:", shipOrigin);
-  return shipOrigin;
+  const { coordinate, orientation } = await waitForShipPlacementClick(
+    ".board1"
+  );
+  console.log("User clicked at:", coordinate, "with orientation:", orientation);
+  return { coordinate, orientation };
 }
 
 async function pickShipCoord() {
@@ -121,15 +140,28 @@ async function pickShipCoord() {
   const shipsArr = shipLengths.map((length) => Ship(length));
 
   for (const ship of shipsArr) {
-    console.log(
-      "Waiting for user pick of ship origin for ship of length:",
-      ship.length
-    );
-    const newShipCoord = await dropShip();
-    player1.gameboard.placeShip(ship, newShipCoord);
-    console.log(`Ship of length ${ship.length} placed at ${newShipCoord}`);
+    let validPlacement = false;
+    while (!validPlacement) {
+      console.log(
+        "Waiting for user pick of ship origin for ship of length:",
+        ship.length
+      );
+      const { coordinate, orientation } = await dropShip();
+      validPlacement = player1.gameboard.placeShip(
+        ship,
+        coordinate,
+        orientation
+      );
+      if (!validPlacement) {
+        console.log(
+          `Invalid placement for ship of length ${ship.length} at ${coordinate} with orientation ${orientation}. Please select a new location.`
+        );
+      } else {
+        console.log(`Ship of length ${ship.length} placed at ${coordinate}`);
+        displayShips(player1, board1);
+      }
+    }
   }
-
   console.log("All ships placed:", player1.gameboard.getPlacedShips());
 }
 

@@ -13,41 +13,35 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
       const shipLength = ship.length;
       let originCoordX = originCoord[0];
       let originCoordY = originCoord[1];
-      let coordArray = [originCoord];
 
-      // Origin coordinates must be within range
+      // Ensure the origin itself is within bounds
       if (
-        originCoordX >= this.boardDimensions.cols ||
-        originCoordY >= this.boardDimensions.rows ||
         originCoordX < 0 ||
-        originCoordY < 0
+        originCoordX >= this.boardDimensions.cols ||
+        originCoordY < 0 ||
+        originCoordY >= this.boardDimensions.rows
       ) {
         alert("Origin Coordinates out of bounds");
         return false;
       }
 
+      let coordArray = [];
+
       if (horizOrVert === "horizontal") {
-        if (originCoordX + shipLength - 1 > this.boardDimensions.cols) {
-          alert("Ship will not fit on board");
-          return false;
+        // If the ship would extend past the right edge, adjust the starting x-coordinate.
+        if (originCoordX + shipLength > this.boardDimensions.cols) {
+          originCoordX = this.boardDimensions.cols - shipLength;
         }
-        for (
-          let i = originCoordX + 1;
-          i <= shipLength - 1 + originCoordX;
-          i++
-        ) {
+        // Build the coordinate array from the (possibly adjusted) origin.
+        for (let i = originCoordX; i < originCoordX + shipLength; i++) {
           coordArray.push([i, originCoordY]);
         }
       } else if (horizOrVert === "vertical") {
-        if (originCoordY + shipLength - 1 > this.boardDimensions.rows) {
-          alert("Ship will not fit on board");
-          return false;
+        // If the ship would extend past the bottom edge, adjust the starting y-coordinate.
+        if (originCoordY + shipLength > this.boardDimensions.rows) {
+          originCoordY = this.boardDimensions.rows - shipLength;
         }
-        for (
-          let i = originCoordY + 1;
-          i <= shipLength - 1 + originCoordY;
-          i++
-        ) {
+        for (let i = originCoordY; i < originCoordY + shipLength; i++) {
           coordArray.push([originCoordX, i]);
         }
       } else {
@@ -55,24 +49,19 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
         return false;
       }
 
-      // Verify not overlapping
-      const duplicates = [];
-      const placedCoords = this.placedShips.reduce((acc, placement) => {
-        return acc.concat(placement.coordArray);
-      }, []);
+      // Verify that no coordinates overlap with already placed ships.
+      const placedCoords = this.placedShips.reduce(
+        (acc, placement) => acc.concat(placement.coordArray),
+        []
+      );
       const arr2Set = new Set(placedCoords.map((item) => JSON.stringify(item)));
 
-      // Check each new proposed coordinate to ensure it's not already used
       for (let i = 0; i < coordArray.length; i++) {
         const key = JSON.stringify(coordArray[i]);
         if (arr2Set.has(key)) {
-          duplicates.push(coordArray[i]);
+          alert("Position already occupied!");
+          return false;
         }
-      }
-
-      if (duplicates.length !== 0) {
-        alert("Position already occupied!");
-        return false;
       }
 
       this.placedShips.push({ ship, coordArray });

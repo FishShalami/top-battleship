@@ -187,7 +187,7 @@ function placeComputerShips() {
         );
       } else {
         console.log(`Ship of length ${ship.length} placed at ${compCoord}`);
-        displayShips(player2, board2);
+        // displayShips(player2, board2);
       }
     }
   }

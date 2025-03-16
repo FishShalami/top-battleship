@@ -1,0 +1,66 @@
+/*!*****************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/style.css ***!
+  \*****************************************************************/
+h1 {
+  color: blue;
+  text-align: center;
+}
+
+.status {
+  text-align: center;
+}
+
+.players {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.player1,
+.player2 {
+  width: 50%;
+  text-align: center;
+}
+
+.boards {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 30px;
+}
+
+.board1,
+.board2 {
+  display: grid;
+  grid-gap: 0.25em;
+  grid-template-rows: repeat(var(--grid-rows), 1fr);
+  grid-template-columns: repeat(var(--grid-cols), 1fr);
+  border: 3px black solid;
+}
+
+.grid-item {
+  padding: 0.25em;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.grid-item:hover {
+  background-color: lightcoral;
+}
+
+.grid-item.ship-present {
+  background-color: blue;
+}
+
+.grid-item.missed {
+  border: 2px red solid;
+  color: red;
+  font-weight: 800;
+}
+
+.grid-item.attacked {
+  border: 2px red solid;
+  color: red;
+  background-color: black;
+  font-weight: 800;
+}
+

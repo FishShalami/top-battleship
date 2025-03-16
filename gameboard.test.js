@@ -66,25 +66,39 @@ describe("Gameboard behavior for ship placement", () => {
       expect(board.placeShip(ship, [0, 0], "vertical")).toBe(false);
     });
 
-    it("should not allow overlapping ships", () => {
+    it("should not allow overlapping ships (scenario 2)", () => {
       board.placeShip(ship, [2, 2], "horizontal");
       expect(board.placeShip(ship, [2, 1], "vertical")).toBe(false);
     });
 
-    it("should not allow overlapping ships", () => {
+    it("should not allow overlapping ships (scenario 3)", () => {
       board.placeShip(ship, [2, 2], "horizontal");
       board.placeShip(ship, [1, 1], "horizontal");
       expect(board.placeShip(ship, [2, 1], "vertical")).toBe(false);
     });
   });
 
-  describe("Ships going off board", () => {
-    it("should prevent horizontal ships from extending off the board", () => {
-      expect(board.placeShip(ship, [9, 0], "horizontal")).toBe(false);
+  describe("Ships auto-adjust when extending off board", () => {
+    it("should auto-adjust horizontal ships that extend off the board", () => {
+      // For a ship of length 3 on a 10-column board, starting at [9, 0]
+      // the origin will adjust to [7, 0] so that the ship spans [7,0], [8,0], [9,0]
+      expect(board.placeShip(ship, [9, 0], "horizontal")).toBe(true);
+      expect(board.getPlacedShips()[0].coordArray).toEqual([
+        [7, 0],
+        [8, 0],
+        [9, 0],
+      ]);
     });
 
-    it("should prevent vertical ships from extending off the board", () => {
-      expect(board.placeShip(ship, [0, 9], "vertical")).toBe(false);
+    it("should auto-adjust vertical ships that extend off the board", () => {
+      // For a ship of length 3 on a 10-row board, starting at [0, 9]
+      // the origin will adjust to [0, 7] so that the ship spans [0,7], [0,8], [0,9]
+      expect(board.placeShip(ship, [0, 9], "vertical")).toBe(true);
+      expect(board.getPlacedShips()[0].coordArray).toEqual([
+        [0, 7],
+        [0, 8],
+        [0, 9],
+      ]);
     });
   });
 
@@ -93,7 +107,7 @@ describe("Gameboard behavior for ship placement", () => {
       expect(board.placeShip(ship, [12, 0], "horizontal")).toBe(false);
     });
 
-    it("should prevent vertical ships from extending off the board", () => {
+    it("should prevent vertical ships with origin out of range", () => {
       expect(board.placeShip(ship, [0, 12], "vertical")).toBe(false);
     });
 

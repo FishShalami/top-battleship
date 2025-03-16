@@ -163,6 +163,10 @@ function getComputerShipCoord() {
 }
 
 function placeComputerShips() {
+  //temp disable alerts from overlapping ships
+  const originalAlert = window.alert;
+  window.alert = () => {};
+
   const shipLengths = [2, 3, 3, 4, 5];
   const shipsArr = shipLengths.map((length) => Ship(length));
 
@@ -188,6 +192,9 @@ function placeComputerShips() {
     }
   }
   console.log("All ships placed:", player2.gameboard.getPlacedShips());
+
+  // Restore the original alert function.
+  window.alert = originalAlert;
 }
 
 function updateCellClass(board, coordinate, className) {

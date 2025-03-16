@@ -1,5 +1,10 @@
 h1 {
   color: blue;
+  text-align: center;
+}
+
+.status {
+  text-align: center;
 }
 
 .players {
@@ -26,6 +31,7 @@ h1 {
   grid-gap: 0.25em;
   grid-template-rows: repeat(var(--grid-rows), 1fr);
   grid-template-columns: repeat(var(--grid-cols), 1fr);
+  border: 3px black solid;
 }
 
 .grid-item {

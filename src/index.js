@@ -338,11 +338,21 @@ async function playerTurn(defender, attacker) {
   );
 }
 
+function updateTurnMessage(playerName, message = "") {
+  const statusElement = document.querySelector(".status");
+  if (message !== "" && statusElement) {
+    statusElement.innerText = message;
+  } else {
+    statusElement.innerText = `It is ${playerName}'s turn to attack!`;
+  }
+}
+
 async function gameLoop(attacker, defender) {
   while (
     !defender.gameboard.allShipsSunk() &&
     !attacker.gameboard.allShipsSunk()
   ) {
+    updateTurnMessage(attacker.name);
     await playerTurn(defender, attacker);
     // Check if the defender's board is sunk:
     if (defender.gameboard.allShipsSunk()) break;
@@ -350,12 +360,15 @@ async function gameLoop(attacker, defender) {
     [attacker, defender] = [defender, attacker];
   }
   // console.log(`${attacker.name} wins!`);
+  // Optionally clear the message or announce the winner.
   alert(`${attacker.name} wins!`);
+  updateTurnMessage("", `${attacker.name} wins!`);
 }
 
 (async function startGameSequence() {
   alert(`Pick locations for five ships (lengths 2, 3, 3, 4, and 5). 
     Hold shift key when selecting to make ship vertical`);
+  updateTurnMessage("", "Pick ship locations");
   await pickShipCoord();
   placeComputerShips();
   initializeBoard();

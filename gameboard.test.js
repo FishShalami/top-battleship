@@ -32,8 +32,7 @@ describe("Gameboard initialization", () => {
   });
 });
 
-//ship placement
-
+// ship placement tests
 describe("Gameboard behavior for ship placement", () => {
   let board;
   let ship;
@@ -45,7 +44,7 @@ describe("Gameboard behavior for ship placement", () => {
 
   describe("Placing ships on board", () => {
     it("placeShip should provide coordinates of horizontal ship", () => {
-      board.placeShip(ship, [0, 0], "horizontal");
+      expect(board.placeShip(ship, [0, 0], "horizontal")).toBe(true);
       expect(board.getPlacedShips()[0].coordArray).toEqual([
         [0, 0],
         [1, 0],
@@ -54,7 +53,7 @@ describe("Gameboard behavior for ship placement", () => {
     });
 
     it("placeShip should provide coordinates of vertical ship", () => {
-      board.placeShip(ship, [0, 0], "vertical");
+      expect(board.placeShip(ship, [0, 0], "vertical")).toBe(true);
       expect(board.getPlacedShips()[0].coordArray).toEqual([
         [0, 0],
         [0, 1],
@@ -64,47 +63,47 @@ describe("Gameboard behavior for ship placement", () => {
 
     it("should not allow overlapping ships", () => {
       board.placeShip(ship, [0, 0], "vertical");
-      expect(() => board.placeShip(ship, [0, 0], "vertical")).toThrow();
+      expect(board.placeShip(ship, [0, 0], "vertical")).toBe(false);
     });
 
     it("should not allow overlapping ships", () => {
       board.placeShip(ship, [2, 2], "horizontal");
-      expect(() => board.placeShip(ship, [2, 1], "vertical")).toThrow();
+      expect(board.placeShip(ship, [2, 1], "vertical")).toBe(false);
     });
 
     it("should not allow overlapping ships", () => {
       board.placeShip(ship, [2, 2], "horizontal");
       board.placeShip(ship, [1, 1], "horizontal");
-      expect(() => board.placeShip(ship, [2, 1], "vertical")).toThrow();
+      expect(board.placeShip(ship, [2, 1], "vertical")).toBe(false);
     });
   });
 
   describe("Ships going off board", () => {
     it("should prevent horizontal ships from extending off the board", () => {
-      expect(() => board.placeShip(ship, [9, 0], "horizontal")).toThrow();
+      expect(board.placeShip(ship, [9, 0], "horizontal")).toBe(false);
     });
 
     it("should prevent vertical ships from extending off the board", () => {
-      expect(() => board.placeShip(ship, [0, 9], "vertical")).toThrow();
+      expect(board.placeShip(ship, [0, 9], "vertical")).toBe(false);
     });
   });
 
   describe("Origin coordinates in bounds", () => {
     it("should prevent origin coordinates out of range", () => {
-      expect(() => board.placeShip(ship, [12, 0], "horizontal")).toThrow();
+      expect(board.placeShip(ship, [12, 0], "horizontal")).toBe(false);
     });
 
     it("should prevent vertical ships from extending off the board", () => {
-      expect(() => board.placeShip(ship, [0, 12], "vertical")).toThrow();
+      expect(board.placeShip(ship, [0, 12], "vertical")).toBe(false);
     });
 
-    it("should prevent negaitve origin coordinates", () => {
-      expect(() => board.placeShip(ship, [-1, 0], "vertical")).toThrow();
+    it("should prevent negative origin coordinates", () => {
+      expect(board.placeShip(ship, [-1, 0], "vertical")).toBe(false);
     });
   });
 });
 
-//receive attacks from opponent
+// receive attacks tests remain unchanged
 describe("Gameboard behavior for receive attacks", () => {
   let board;
   let ship;
@@ -115,18 +114,15 @@ describe("Gameboard behavior for receive attacks", () => {
     board.placeShip(ship, [0, 0], "horizontal");
   });
 
-  //provided coordinates are within the bounds of the board
   it("should have attack coordinates within bounds", () => {
     expect(() => board.receiveAttack([12, 0])).toThrow();
   });
 
-  //if an attack is a miss the getMissedAttacks is updated
   it("should update the getMissedAttacks for a single miss", () => {
     board.receiveAttack([5, 5]);
     expect(board.getMissedAttacks()).toContainEqual([5, 5]);
   });
 
-  //the getMissedAttacks stores multiple misses updated
   it("should record multiple missed attacks", () => {
     board.receiveAttack([5, 5]);
     board.receiveAttack([4, 4]);
@@ -138,13 +134,11 @@ describe("Gameboard behavior for receive attacks", () => {
     );
   });
 
-  //hits are not stored in the getMissedAttacks
   it("should not record a hit as a miss", () => {
     board.receiveAttack([1, 0]);
     expect(board.getMissedAttacks()).toEqual([]);
   });
 
-  //prevent duplicate attack that is a miss
   it("should prevent duplicate attacks on a miss", () => {
     const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
     board.receiveAttack([5, 5]);
@@ -159,7 +153,6 @@ describe("Gameboard behavior for receive attacks", () => {
   it("should prevent duplicate attacks on a direct hit", () => {
     const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
     board.receiveAttack([0, 0]);
-
     const result = board.receiveAttack([0, 0]);
     expect(result).toBe(false);
     expect(alertSpy).toHaveBeenCalledWith(
@@ -167,10 +160,8 @@ describe("Gameboard behavior for receive attacks", () => {
     );
   });
 
-  //hits are stored in the ship object
   describe("When an attack is on a ship coordinate", () => {
     it("should call the ship's hit() method", () => {
-      // Use jest.spyOn to monitor ship.hit
       const hitSpy = jest.spyOn(ship, "hit");
       board.receiveAttack([0, 0]);
       expect(hitSpy).toHaveBeenCalled();

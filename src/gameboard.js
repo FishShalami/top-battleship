@@ -15,19 +15,21 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
       let originCoordY = originCoord[1];
       let coordArray = [originCoord];
 
-      //origin coordinates must be within range
+      // Origin coordinates must be within range
       if (
         originCoordX >= this.boardDimensions.cols ||
         originCoordY >= this.boardDimensions.rows ||
         originCoordX < 0 ||
         originCoordY < 0
       ) {
-        throw new Error("Origin Coordinates out of bounds");
+        alert("Origin Coordinates out of bounds");
+        return false;
       }
 
       if (horizOrVert === "horizontal") {
         if (originCoordX + shipLength - 1 > this.boardDimensions.cols) {
-          throw new Error("Ship will not fit on board");
+          alert("Ship will not fit on board");
+          return false;
         }
         for (
           let i = originCoordX + 1;
@@ -38,7 +40,8 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
         }
       } else if (horizOrVert === "vertical") {
         if (originCoordY + shipLength - 1 > this.boardDimensions.rows) {
-          throw new Error("Ship will not fit on board");
+          alert("Ship will not fit on board");
+          return false;
         }
         for (
           let i = originCoordY + 1;
@@ -47,19 +50,19 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
         ) {
           coordArray.push([originCoordX, i]);
         }
-      } else throw new Error("Ship orientation not provided");
+      } else {
+        alert("Ship orientation not provided");
+        return false;
+      }
 
-      //verify not overlapping
+      // Verify not overlapping
       const duplicates = [];
-
-      //create a single array of all ship coordinates
       const placedCoords = this.placedShips.reduce((acc, placement) => {
         return acc.concat(placement.coordArray);
       }, []);
-      //convert all coordinates to strings for easy comparison
       const arr2Set = new Set(placedCoords.map((item) => JSON.stringify(item)));
 
-      //for each new proposed coordinate, ensure it's not already used
+      // Check each new proposed coordinate to ensure it's not already used
       for (let i = 0; i < coordArray.length; i++) {
         const key = JSON.stringify(coordArray[i]);
         if (arr2Set.has(key)) {
@@ -67,11 +70,15 @@ function Gameboard(dimensions = { rows: 10, cols: 10 }) {
         }
       }
 
-      if (duplicates.length !== 0)
-        throw new Error("Position already occupied!");
+      if (duplicates.length !== 0) {
+        alert("Position already occupied!");
+        return false;
+      }
 
       this.placedShips.push({ ship, coordArray });
+      return true;
     },
+
     getPlacedShips() {
       return this.placedShips;
     },

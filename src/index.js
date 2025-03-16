@@ -17,48 +17,15 @@ let attacker = player1.type;
 
 //place five ships 2, 3, 3, 4, 5 in length
 
-//create object with five ships for player1 and player2
-//for each ship, ask user to click on the cell where the ship should be
-//hold shift to change the orientation from horizontal to vertical
-//use css to highlight the squares that the ship will exist in
-//
+// const ship4 = Ship(2);
+// const ship5 = Ship(3);
+// const ship6 = Ship(4);
 
-// function waitForVesselPlace() {
-//   return new Promise((resolve) => {
-//     const board = document.querySelector(".board1");
-
-//     function clickHandler(e) {
-//       if (e.target.matches(".grid-item")) {
-//         const x = parseInt(e.target.dataset.x, 10);
-//         const y = parseInt(e.target.dataset.y, 10);
-//         // Remove the event listener after a valid click to prevent multiple triggers.
-//         board.removeEventListener("click", clickHandler);
-//         console.log("Clicked cell coordinates:", x, y);
-//         resolve([x, y]);
-//       }
-//     }
-//     board.addEventListener("click", clickHandler);
-//   });
-// }
-
-// const ship1 = Ship(2);
-// const ship2 = Ship(3);
-// const ship3 = Ship(4);
-const ship4 = Ship(2);
-const ship5 = Ship(3);
-const ship6 = Ship(4);
-
-// player1.gameboard.placeShip(ship1, [0, 0]);
-// player1.gameboard.placeShip(ship2, [0, 3]);
-// player1.gameboard.placeShip(ship3, [0, 5], "vertical");
-// console.log(player1.name);
-// console.log(player1.gameboard.getPlacedShips());
-
-player2.gameboard.placeShip(ship4, [0, 0]);
-player2.gameboard.placeShip(ship5, [0, 4]);
-player2.gameboard.placeShip(ship6, [0, 5], "vertical");
-console.log(player2.name);
-console.log(player2.gameboard.getPlacedShips());
+// player2.gameboard.placeShip(ship4, [0, 0]);
+// player2.gameboard.placeShip(ship5, [0, 4]);
+// player2.gameboard.placeShip(ship6, [0, 5], "vertical");
+// console.log(player2.name);
+// console.log(player2.gameboard.getPlacedShips());
 
 //display player names
 const p1Selector = document.querySelector(".player1");
@@ -163,6 +130,64 @@ async function pickShipCoord() {
     }
   }
   console.log("All ships placed:", player1.gameboard.getPlacedShips());
+}
+
+function getAllCoordinates(rows, cols) {
+  let allCoords = [];
+
+  // Loop through each row (y-axis)
+  for (let y = 0; y < rows; y++) {
+    const rowArray = [];
+    // Loop through each column in the current row (x-axis)
+    for (let x = 0; x < cols; x++) {
+      allCoords.push([x, y]);
+    }
+  }
+  return allCoords;
+}
+
+function getComputerShipCoord() {
+  //need array of all coordinates
+  let b2Rows = player2.gameboard.boardDimensions.rows;
+  let b2Cols = player2.gameboard.boardDimensions.cols;
+
+  function getRandomCoord(arr) {
+    if (arr.length === 0) {
+      return undefined; // Return undefined for empty arrays
+    }
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    return arr[randomIndex];
+  }
+
+  return getRandomCoord(getAllCoordinates(b2Rows, b2Cols));
+}
+
+function placeComputerShips() {
+  const shipLengths = [2, 3, 3, 4, 5];
+  const shipsArr = shipLengths.map((length) => Ship(length));
+
+  for (const ship of shipsArr) {
+    let validPlacement = false;
+    while (!validPlacement) {
+      console.log("Computer picking location");
+      let compCoord = getComputerShipCoord();
+      let orientation = Math.random() < 0.5 ? "vertical" : "horizontal";
+      validPlacement = player2.gameboard.placeShip(
+        ship,
+        compCoord,
+        orientation
+      );
+      if (!validPlacement) {
+        console.log(
+          `Invalid placement for ship of length ${ship.length} at ${compCoord} with orientation ${orientation}. Retrying...`
+        );
+      } else {
+        console.log(`Ship of length ${ship.length} placed at ${compCoord}`);
+        displayShips(player2, board2);
+      }
+    }
+  }
+  console.log("All ships placed:", player2.gameboard.getPlacedShips());
 }
 
 function updateCellClass(board, coordinate, className) {
@@ -323,6 +348,7 @@ async function gameLoop(attacker, defender) {
 
 (async function startGameSequence() {
   await pickShipCoord();
+  placeComputerShips();
   initializeBoard();
   gameLoop(player1, player2);
 })();
